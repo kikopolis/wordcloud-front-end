@@ -1,52 +1,78 @@
-import { Component }              from '@angular/core';
+import { Component } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { HttpClient }             from '@angular/common/http';
-import { Router }                 from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
+import { catchError, tap } from "rxjs";
+import { environment } from "../../environments/environment";
 
 @Component({
-    selector   : 'app-sendform',
+    selector: 'app-sendform',
     templateUrl: './sendform.component.html',
-    styleUrls  : ['./sendform.component.scss'],
+    styleUrls: ['./sendform.component.css'],
 })
 export class SendformComponent {
+    public sendForm: FormGroup = this.formBuilder.group({ text: '', ignoredWords: '', ignoreDefaultWords: false });
+    public overlayClasses: string = 'overlay overlay-hidden';
+    private path: string = '/rest/words/send';
+    private url = environment.coreApiUrl + this.path;
     private text: string = '';
-    public sendForm: FormGroup = this.formBuilder.group({ text: ''});
+    private ignoredWords: string = '';
+    private ignoreDefaultWords: boolean = false;
+    private file: File | null = null;
+
     constructor(
         private formBuilder: FormBuilder,
         private http: HttpClient,
         private router: Router,
-    ) {}
-    
+    ) {
+    }
+
+    onFileSelected(event: any): void {
+        const file: File = event.target.files[0];
+        if (file != null) {
+            this.file = file;
+        }
+    }
+
     onSubmit(): void {
-        // Process checkout data here
-        console.warn('Your order has been submitted', this.sendForm.value);
-        if (this.sendForm.value.text != null) {
-            this.text = this.sendForm.value.text;
-            const formData : { text: string } = { text: this.text }
+        if (this.file != null) {
+            this.setOverlayClasses(true);
+            this.ignoredWords = this.sendForm.value.ignoredWords;
+            this.ignoreDefaultWords = this.sendForm.value.ignoreDefaultWords;
+            const formData: FormData = new FormData();
+            formData.append('file', this.file);
+            formData.append('ignoredWords', this.ignoredWords);
+            formData.append('ignoreDefaultWords', this.ignoreDefaultWords.toString());
             this.http
-                .post('http://localhost:8081/rest/words/send',
-                      JSON.stringify(formData),
-                      { headers: { 'Content-Type': 'application/json' } })
-                .subscribe({
-                    next: (response) => this.onSuccess(response),
-                    error: (error) => this.onError(error)
-                });
+                .post(this.url, formData, { responseType: 'text' })
+                .pipe(
+                    tap((response: any) => this.onSuccess(response)),
+                    catchError((error: any) => {
+                        this.onError(error);
+                        throw error;
+                    }),
+                )
+                .subscribe();
         } else {
-            console.log('No text');
+            console.log('No text file');
         }
     }
-    
+
     onSuccess(response: any): void {
-        const id: string = response?.id;
-        if (id != null) {
+        if (response !== '') {
             this.sendForm.reset();
-            this.router.navigate(['/inprogress']);
-        } else {
-            console.log('No id');
+            this.router.navigate(['/inprogress'],
+                { queryParams: { uuid: response } });
         }
+        this.setOverlayClasses(false);
     }
-    
+
     onError(error: any): void {
         console.log('Error: ' + error);
+        this.setOverlayClasses(false);
+    }
+
+    setOverlayClasses(show: boolean): void {
+        this.overlayClasses = show ? 'overlay overlay-shown' : 'overlay overlay-hidden';
     }
 }

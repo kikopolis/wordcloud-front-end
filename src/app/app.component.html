@@ -1,5 +1,19 @@
-<a routerLink="/home">Home</a>
-<a routerLink="/sendform">Send text for processing</a>
-<a routerLink="/cloud">Cloud</a>
+<div class="navbar">
+    <div class="container">
+        <div class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom w-100">
+            <ul class="nav nav-pills">
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/home">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/sendform">Upload</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/wordcloud">Cloud</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
 
 <router-outlet></router-outlet>

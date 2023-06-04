@@ -1,6 +1,30 @@
 <div class="container">
-    <form [formGroup]="sendForm" (ngSubmit)="onSubmit()">
-        <textarea formControlName="text" class="form-control" rows="3"></textarea>
-        <button type="submit" class="btn btn-primary">Send</button>
+    <div class="row my-5 p-4 bg-info rounded-1 text-white">
+        <h4 class="text-center">Info:</h4>
+        <p class="text-center">Maximum file upload size is 100MB.</p>
+        <p class="text-center">The words You wish to ignore must be separated by a comma, no need for spaces.</p>
+    </div>
+    <form (ngSubmit)="onSubmit()" [formGroup]="sendForm">
+        <div class="mb-4">
+            <input (change)="onFileSelected($event)" class="file-upload" type="file">
+        </div>
+        <div class="mb-4">
+            <label for="ignoredWords">Enter words to ignore when counting, separate them with a comma</label>
+            <input class="form-control" formControlName="ignoredWords" id="ignoredWords" name="ignoredWords"
+                   type="text">
+        </div>
+        <div class="mb-4">
+            <div class="form-check">
+                <input class="form-check-input" formControlName="ignoreDefaultWords" id="ignoreDefaultWords"
+                       name="ignoreDefaultWords" type="checkbox">
+                <label class="form-check-label" for="ignoreDefaultWords">Check to ignore words in the list below</label>
+            </div>
+            <div class="default-word-ignore-list">
+                a, at, in, on, the, to, and, but, or
+            </div>
+        </div>
+        <button class="btn btn-primary" type="submit">Send</button>
     </form>
 </div>
+
+<div class="{{ overlayClasses }}"></div>

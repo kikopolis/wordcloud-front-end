@@ -1,1 +1,13 @@
-<p>inprogress works!</p>
+<div class="container">
+    <h1 class="{{ headingClassList() }}">
+        {{ getHeading() }}
+    </h1>
+    <h4>This is your unique identifier : "{{ getUuid() }}"</h4>
+    <p *ngIf="getStatus() === Status.PROCESSED" class="text-center">
+        Click <a [queryParams]="{ uuid: getUuid() }" routerLink="/wordcloud">here</a> to view your word cloud
+    </p>
+    <div class="{{ infoClassList() }}">
+        <h4 class="text-center">{{ getDisplayStatus() }}</h4>
+        <p class="text-center">{{ getInfoText() }}</p>
+    </div>
+</div>

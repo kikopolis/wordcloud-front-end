@@ -8,7 +8,7 @@ WORKDIR /opt/src/app
 
 RUN npm install -g @angular/cli@16
 
-RUN npm run build
+RUN npm run build -- --configuration=production
 
 FROM nginx:alpine
 

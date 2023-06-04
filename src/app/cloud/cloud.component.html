@@ -1,1 +1,44 @@
-<p>cloud works!</p>
+<div *ngIf="getWords().length === 0">
+    <div class="row">
+        <h1 class="text-center text-warning">No identifier given</h1>
+    </div>
+    <div class="container">
+        <form (ngSubmit)="onSubmit()" [formGroup]="workUuidGroup">
+            <div class="mb-4">
+                <label for="workUuid">Enter your work identifier you were given when uploading your text file</label>
+                <input class="form-control" formControlName="workUuid" id="workUuid" name="ignoredWords"
+                       type="text">
+            </div>
+            <button class="btn btn-primary" type="submit">Send</button>
+        </form>
+    </div>
+</div>
+
+<div *ngIf="getWords().length > 0">
+    <div class="row w-100">
+        <div class="col-12 col-md-8 mx-auto my-5">
+            <angular-tag-cloud [data]="data" [config]="options" [zoomOnHover]="zoomOnHoverOptions"></angular-tag-cloud>
+        </div>
+    </div>
+
+    <div class="row container mx-auto">
+        <div class="row d-flex flex-row flex-nowrap col-10 col-md-6 mx-auto">
+            <a (click)="sortAscending()" class="w-50 btn btn-primary">Ascending</a>
+            <a (click)="sortDescending()" class="w-50 btn btn-success">Descending</a>
+        </div>
+    </div>
+
+    <div class="row container mt-5 mx-auto">
+        <div *ngFor="let word of getWords(); index as idx" class="row w-25 mx-auto">
+            <p class="text-center">
+                {{ idx + 1 }}. {{ word.word }}: {{ word.count }}
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="row container mx-auto" *ngIf="error !== ''">
+    <div class="bg-danger text-white p-5 rounded-1 mx-auto m-5">
+        <h3>{{ error }}</h3>
+    </div>
+</div>
